@@ -1,0 +1,47 @@
+name: ARKA Django CI
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+permissions:
+  contents: read
+
+jobs:
+  django-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          else
+            pip install "Django>=4.2,<5.0"
+          fi
+
+      - name: Validar proyecto Django
+        run: |
+          if [ -f src/manage.py ]; then
+            cd src
+            python manage.py check
+          else
+            echo "Aún no existe src/manage.py"
+            exit 1
+          fi
