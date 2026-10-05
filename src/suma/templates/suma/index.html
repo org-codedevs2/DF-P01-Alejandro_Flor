@@ -1,0 +1,11 @@
+<h1>Sumar dos números</h1>
+
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Sumar</button>
+</form>
+
+{% if resultado is not None %}
+  <p>Resultado: {{ resultado }}</p>
+{% endif %}
