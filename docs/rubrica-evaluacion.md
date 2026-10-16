@@ -1,3 +1,7 @@
+---
+title: Rúbrica de Evaluación
+---
+
 # Rúbrica de Evaluación - Proyecto ARKA
 
 | Criterio | Excelente (5.0) | Aceptable (3.5) | Insuficiente (2.0) |

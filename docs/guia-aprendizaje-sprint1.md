@@ -1,3 +1,7 @@
+---
+title: Guía de Aprendizaje - Sprint 1
+---
+
 # Guía de Aprendizaje - Sprint 1 (ARKA)
 
 ## Objetivos del Sprint

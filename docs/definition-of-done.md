@@ -1,3 +1,7 @@
+---
+title: Definition of Done
+---
+
 # Definition of Done (DoD) - Proyecto ARKA
 
 Para dar por completada una historia de usuario o módulo en **ARKA**, se deben cumplir los siguientes requisitos:
