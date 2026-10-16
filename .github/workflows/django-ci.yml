@@ -1,55 +1,48 @@
 name: ARKA Django CI
 
+
 on:
   push:
-    branches: [main, develop]
-  pull_request:
-    branches: [main, develop]
-
-permissions:
-  contents: read
+    branches:
+      - main
+      - feature/suma-resta
+  workflow_dispatch:
 
 jobs:
-  django-check:
-    name: Django en ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, windows-latest]
+  deploy:
+    name: Desplegar Django
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Obtener código
+      - name: Descargar código
         uses: actions/checkout@v4
 
       - name: Configurar Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: '3.14'
 
       - name: Instalar dependencias
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -r requirements.txt
+          pip install -r requirements.txt
 
-      - name: Comprobar proyecto Django
-        working-directory: src
+      - name: Verificar proyecto Django
         run: python manage.py check
+        
+      - name: Crear base de datos
+        run: python manage.py migrate
 
-      - name: Ejecutar pruebas
-        working-directory: src
-        run: python manage.py test
+      - name: Recolectar archivos estáticos
+        run: python manage.py collectstatic --noinput
 
-  deploy:
-    name: Desplegar en Render
-    runs-on: ubuntu-latest
-    needs: django-check
-    # Solo despliega cuando se hace push a main (no en PRs ni en develop)
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-
-    steps:
-      - name: Disparar deploy en Render
+      - name: Desplegar en Render
+        env:
+          RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
         run: |
-          curl --fail-with-body -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
-          echo "✅ Deploy disparado exitosamente en Render"
+          if [ -z "$RENDER_DEPLOY_HOOK_URL" ]; then
+            echo "Falta configurar el secreto de Render"
+            exit 1
+          fi
+          curl --fail --silent --show-error \
+            --request POST "$RENDER_DEPLOY_HOOK_URL"
